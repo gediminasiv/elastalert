@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import datetime
 import logging
+import socket
+import struct
 
 import dateutil.parser
 import dateutil.tz
@@ -28,6 +30,9 @@ def lookup_es_key(lookup_dict, term):
     :returns: The value identified by term or None if it cannot be found
     """
     if term in lookup_dict:
+        if term == 'proxy_subnet':
+            return int_to_ip(lookup_dict[term])
+
         return lookup_dict[term]
     else:
         # If the term does not match immediately, perform iterative lookup:
@@ -170,6 +175,8 @@ def dt_to_unix(dt):
 def dt_to_unixms(dt):
     return dt_to_unix(dt) * 1000
 
+def int_to_ip(ip_as_integer):
+    return socket.inet_ntoa(struct.pack("!I", ip_as_integer))
 
 def cronite_datetime_to_timestamp(self, d):
     """
